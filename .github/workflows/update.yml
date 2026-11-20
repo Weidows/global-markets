@@ -1,0 +1,39 @@
+name: 定时更新行情数据
+
+on:
+  schedule:
+    # 每小时第 5 分钟抓一次（UTC）。GitHub 的 schedule 会有几分钟到十几分钟延迟，属正常。
+    - cron: '5 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: data-update
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: 抓取行情快照
+        run: node scripts/fetch-data.mjs
+
+      - name: 有变化才提交
+        run: |
+          if git diff --quiet -- public/data/snapshot.json; then
+            echo "行情没有变化，跳过提交"
+            exit 0
+          fi
+          git config user.name "markets-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/data/snapshot.json
+          git commit -m "chore(data): 更新行情快照 $(TZ=Asia/Shanghai date +'%Y-%m-%d %H:%M')"
+          git push
