@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-21T07:02:16.330+08:00",
+  "generatedAt": "2026-11-21T11:55:05.094+08:00",
   "source": {
     "name": "东方财富",
     "url": "https://quote.eastmoney.com/center/gridlist.html#global_index"
@@ -19,7 +19,7 @@
       "code": "SENSEX",
       "pct": 1.08
     },
-    "avgPct": -2.254
+    "avgPct": -2.25
   },
   "quotes": [
     {
@@ -161,10 +161,10 @@
       "code": "VNINDEX",
       "market": "100",
       "name": "越南胡志明",
-      "price": 1686.24,
-      "change": -3.38,
-      "pct": -0.2,
-      "quoteTime": "2026-11-20T15:45:05.000+08:00"
+      "price": 1688.79,
+      "change": -0.83,
+      "pct": -0.05,
+      "quoteTime": "2026-11-20T15:59:59.000+08:00"
     },
     {
       "code": "KLSE",
@@ -476,9 +476,9 @@
       "code": "MXX",
       "market": "100",
       "name": "墨西哥BOLSA",
-      "price": 68609.98,
-      "change": -103.62,
-      "pct": -0.15,
+      "price": 68629.46,
+      "change": -84.14,
+      "pct": -0.12,
       "quoteTime": "2026-11-21T04:59:59.000+08:00"
     },
     {
