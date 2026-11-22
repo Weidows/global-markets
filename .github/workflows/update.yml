@@ -28,12 +28,12 @@ jobs:
 
       - name: 有变化才提交
         run: |
-          if git diff --quiet -- public/data/snapshot.json; then
+          if git diff --quiet -- public/data; then
             echo "行情没有变化，跳过提交"
             exit 0
           fi
           git config user.name "markets-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/data/snapshot.json
-          git commit -m "chore(data): 更新行情快照 $(TZ=Asia/Shanghai date +'%Y-%m-%d %H:%M')"
+          git add public/data
+          git commit -m "chore(data): 更新行情与一周日线 $(TZ=Asia/Shanghai date +'%Y-%m-%d %H:%M')"
           git push

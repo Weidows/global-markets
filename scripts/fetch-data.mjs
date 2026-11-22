@@ -47,6 +47,80 @@ async function fetchBatch(secids) {
   throw lastErr
 }
 
+const HISTORY_OUT = path.join(root, 'public/data/history.json')
+const KLINE_DAYS = 8
+const KLINE_HOSTS = ['https://push2his.eastmoney.com', 'https://push2his.eastmoney.com', 'https://push2his.eastmoney.com']
+
+/**
+ * 日线：只抓"地图上要画的"核心市场，且每天只抓一次。
+ * push2his 对密集请求敏感（连发 50 次会被临时断连），所以这里串行 + 间隔 + 重试。
+ */
+async function fetchKline(p) {
+  const qs = `secid=${p.market}.${p.code}&klt=101&fqt=1&lmt=${KLINE_DAYS}&end=20500101&fields1=f1,f2,f3,f4,f5,f6&fields2=f51,f53,f59&_=${Date.now()}`
+  let lastErr
+  for (const host of KLINE_HOSTS) {
+    try {
+      const ctl = new AbortController()
+      const timer = setTimeout(() => ctl.abort(), 15000)
+      const res = await fetch(`${host}/api/qt/stock/kline/get?${qs}`, {
+        signal: ctl.signal,
+        headers: {
+          Referer: 'https://quote.eastmoney.com/',
+          'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122 Safari/537.36',
+        },
+      }).finally(() => clearTimeout(timer))
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      const json = await res.json()
+      const klines = json?.data?.klines
+      if (!Array.isArray(klines) || klines.length === 0) throw new Error('无日线数据')
+      return klines.map((line) => {
+        const [d, c, pct] = line.split(',')
+        return { d: d.slice(5), c: Number(c), p: Number(pct) }
+      })
+    } catch (e) {
+      lastErr = e
+    }
+  }
+  throw lastErr
+}
+
+function historyIsFresh() {
+  try {
+    const h = JSON.parse(fs.readFileSync(HISTORY_OUT, 'utf8'))
+    if (!h?.generatedAt) return false
+    return h.generatedAt.slice(0, 10) === nowCstIso().slice(0, 10)
+  } catch {
+    return false
+  }
+}
+
+async function updateHistory(force) {
+  if (!force && historyIsFresh()) {
+    console.log('一周日线：今天已抓过，跳过')
+    return
+  }
+  const targets = places.filter((p) => p.core)
+  const series = {}
+  const failed = []
+  for (let i = 0; i < targets.length; i++) {
+    const p = targets[i]
+    try {
+      series[p.code] = await fetchKline(p)
+    } catch (e) {
+      failed.push(`${p.code}(${e.message})`)
+      process.stdout.write(`\r  日线 ${i + 1}/${targets.length} 失败 ${p.code}  `)
+    }
+    await new Promise((r) => setTimeout(r, 900))
+  }
+  const okCount = Object.keys(series).length
+  console.log(`\r一周日线：成功 ${okCount}/${targets.length}${failed.length ? '，失败 ' + failed.join(' ') : ''}`)
+  if (okCount === 0) return
+  const payload = { generatedAt: nowCstIso(), days: KLINE_DAYS, series }
+  fs.writeFileSync(HISTORY_OUT, JSON.stringify(payload, null, 2) + '\n')
+  console.log(`已写入 ${path.relative(root, HISTORY_OUT)}`)
+}
+
 function cstIso(unixSec) {
   if (!unixSec || unixSec <= 0) return null
   const d = new Date((unixSec + 8 * 3600) * 1000)
@@ -121,6 +195,8 @@ async function main() {
     `已写入 ${path.relative(root, OUT)} — ${quotes.length} 个指数, 涨 ${up} 跌 ${down} 平 ${flat}, 生成于 ${snapshot.generatedAt}`,
   )
   if (missing.length) console.warn(`未返回: ${missing.join(', ')}`)
+
+  await updateHistory(process.argv.includes('--force-history'))
 }
 
 main().catch((e) => {
