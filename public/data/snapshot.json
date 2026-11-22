@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-23T01:32:01.995+08:00",
+  "generatedAt": "2026-11-23T06:24:47.473+08:00",
   "source": {
     "name": "东方财富",
     "url": "https://quote.eastmoney.com/center/gridlist.html#global_index"
@@ -19,7 +19,7 @@
       "code": "SENSEX",
       "pct": 1.08
     },
-    "avgPct": -2.25
+    "avgPct": -2.257
   },
   "quotes": [
     {
@@ -224,10 +224,10 @@
       "code": "NZ50",
       "market": "100",
       "name": "新西兰50",
-      "price": 14107.41,
-      "change": -139.84,
-      "pct": -0.98,
-      "quoteTime": "2026-11-20T11:46:39.000+08:00"
+      "price": 13920.57,
+      "change": -186.84,
+      "pct": -1.32,
+      "quoteTime": "2026-11-23T06:04:03.000+08:00"
     },
     {
       "code": "FTSE",
