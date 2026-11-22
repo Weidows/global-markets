@@ -211,8 +211,9 @@ body {
 }
 
 .barblock .hit {
-  fill: transparent;
-  stroke: transparent;
+  fill: rgba(7, 15, 12, 0.62);
+  stroke: rgba(70, 105, 88, 0.32);
+  stroke-width: 0.6;
   transition:
     fill 0.18s,
     stroke 0.18s;
@@ -220,9 +221,9 @@ body {
 
 .barblock:hover .hit,
 .barblock[data-selected='true'] .hit {
-  fill: rgba(53, 208, 138, 0.07);
-  stroke: rgba(93, 154, 124, 0.5);
-  stroke-width: 0.8;
+  fill: rgba(18, 37, 27, 0.9);
+  stroke: rgba(100, 170, 135, 0.7);
+  stroke-width: 1;
 }
 
 .barblock[data-dim='true'] {
@@ -237,7 +238,7 @@ body {
 }
 
 .bar-name {
-  font-size: 10px;
+  font-size: 9.5px;
   font-weight: 560;
   fill: #d3e6db;
   letter-spacing: 0.02em;
@@ -255,7 +256,7 @@ body {
 
 .bar-pct {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 9.5px;
   font-weight: 700;
   letter-spacing: -0.01em;
   pointer-events: none;
@@ -667,15 +668,27 @@ body {
   }
   .mapwrap {
     overflow-x: auto;
-    display: block;
-    padding: 4px 0 0;
+    display: grid;
+    place-items: center;
+    padding: 0;
   }
+  /* 手机上不缩到看不清：整幅地图固定 900px 宽，左右滑动查看，块内字号保持在可读区间 */
   .mapbox {
-    width: 720px;
-    margin: 0 auto;
+    width: 900px;
+    flex: none;
+  }
+  .topbar .spacer {
+    display: none;
+  }
+  .brand h1 {
+    font-size: 15px;
   }
   .panel {
     width: 100%;
     max-width: 100%;
+  }
+  /* 手机底栏只留统计，版权信息挤不下 */
+  .statbar > div:last-child {
+    display: none;
   }
 }

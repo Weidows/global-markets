@@ -34,7 +34,7 @@ export function layoutBlocks(
   }))
   const n = nodes.length
 
-  for (let iter = 0; iter < 500; iter++) {
+  for (let iter = 0; iter < 700; iter++) {
     for (let i = 0; i < n; i++) {
       const a = nodes[i]
       for (let j = i + 1; j < n; j++) {
@@ -56,8 +56,8 @@ export function layoutBlocks(
       }
     }
     for (const t of nodes) {
-      t.x += (t.ax - t.x) * 0.04
-      t.y += (t.ay - t.y) * 0.04
+      t.x += (t.ax - t.x) * 0.01
+      t.y += (t.ay - t.y) * 0.01
       t.x = Math.max(t.w / 2, Math.min(W - t.w / 2, t.x))
       t.y = Math.max(t.h / 2, Math.min(H - t.h / 2, t.y))
     }

@@ -11,7 +11,7 @@
   {"code": "N225", "market": "100", "name": "日经225", "short": "日经225", "city": "东京", "country": "日本", "lat": 35.68, "lon": 139.65, "region": "asia", "core": true},
   {"code": "KS11", "market": "100", "name": "韩国KOSPI", "short": "韩国KOSPI", "city": "首尔", "country": "韩国", "lat": 37.57, "lon": 126.98, "region": "asia", "core": true, "nudge": [0, 0]},
   {"code": "KOSPI200", "market": "100", "name": "韩国KOSPI200", "short": "KOSPI200", "city": "首尔", "country": "韩国", "lat": 36.9, "lon": 127.2, "region": "asia", "core": false, "nudge": [26, 44]},
-  {"code": "STI", "market": "100", "name": "海峡时报", "short": "新加坡STI", "city": "新加坡", "country": "新加坡", "lat": 1.35, "lon": 103.82, "region": "asia", "core": true},
+  {"code": "STI", "market": "100", "name": "海峡时报", "short": "新加坡STI", "city": "新加坡", "country": "新加坡", "lat": 1.35, "lon": 103.82, "region": "asia", "core": false},
   {"code": "SET", "market": "100", "name": "泰国SET", "short": "泰国SET", "city": "曼谷", "country": "泰国", "lat": 13.76, "lon": 100.5, "region": "asia", "core": false},
   {"code": "JKSE", "market": "100", "name": "印尼雅加达综合", "short": "印尼", "city": "雅加达", "country": "印度尼西亚", "lat": -6.21, "lon": 106.85, "region": "asia", "core": false},
   {"code": "VNINDEX", "market": "100", "name": "越南胡志明", "short": "越南", "city": "胡志明市", "country": "越南", "lat": 10.78, "lon": 106.7, "region": "asia", "core": false},
@@ -25,7 +25,7 @@
   {"code": "FTSE", "market": "100", "name": "英国富时100", "short": "富时100", "city": "伦敦", "country": "英国", "lat": 51.51, "lon": -0.13, "region": "europe", "core": true},
   {"code": "GDAXI", "market": "100", "name": "德国DAX30", "short": "德国DAX", "city": "法兰克福", "country": "德国", "lat": 50.11, "lon": 8.68, "region": "europe", "core": true},
   {"code": "FCHI", "market": "100", "name": "法国CAC40", "short": "法国CAC", "city": "巴黎", "country": "法国", "lat": 48.86, "lon": 2.35, "region": "europe", "core": true},
-  {"code": "SX5E", "market": "100", "name": "欧洲斯托克50", "short": "欧洲STOXX", "city": "布鲁塞尔", "country": "欧元区", "lat": 51.4, "lon": 4.9, "region": "europe", "core": true, "nudge": [0, 0]},
+  {"code": "SX5E", "market": "100", "name": "欧洲斯托克50", "short": "欧洲STOXX", "city": "布鲁塞尔", "country": "欧元区", "lat": 51.4, "lon": 4.9, "region": "europe", "core": false, "nudge": [0, 0]},
   {"code": "MIB", "market": "100", "name": "富时意大利MIB", "short": "意大利MIB", "city": "米兰", "country": "意大利", "lat": 45.46, "lon": 9.19, "region": "europe", "core": false},
   {"code": "IBEX", "market": "100", "name": "西班牙IBEX35", "short": "西班牙IBEX", "city": "马德里", "country": "西班牙", "lat": 40.42, "lon": -3.7, "region": "europe", "core": false},
   {"code": "AEX", "market": "100", "name": "荷兰AEX", "short": "荷兰AEX", "city": "阿姆斯特丹", "country": "荷兰", "lat": 52.37, "lon": 4.9, "region": "europe", "core": false},
@@ -47,8 +47,8 @@
   {"code": "NDX", "market": "100", "name": "纳斯达克", "short": "纳斯达克", "city": "纽约", "country": "美国", "lat": 41.05, "lon": -74.01, "region": "americas", "core": true, "nudge": [-14, 8]},
   {"code": "SPX", "market": "100", "name": "标普500", "short": "标普500", "city": "纽约", "country": "美国", "lat": 40.35, "lon": -74.01, "region": "americas", "core": true, "nudge": [68, 46]},
   {"code": "NDX100", "market": "100", "name": "纳斯达克100", "short": "纳指100", "city": "纽约", "country": "美国", "lat": 41.7, "lon": -74.01, "region": "americas", "core": false, "nudge": [0, -108]},
-  {"code": "TSX", "market": "100", "name": "加拿大S&P/TSX", "short": "加拿大TSX", "city": "多伦多", "country": "加拿大", "lat": 43.65, "lon": -79.38, "region": "americas", "core": true, "nudge": [0, 0]},
+  {"code": "TSX", "market": "100", "name": "加拿大S&P/TSX", "short": "加拿大TSX", "city": "多伦多", "country": "加拿大", "lat": 43.65, "lon": -79.38, "region": "americas", "core": false, "nudge": [0, 0]},
   {"code": "BVSP", "market": "100", "name": "巴西BOVESPA", "short": "巴西IBOV", "city": "圣保罗", "country": "巴西", "lat": -23.55, "lon": -46.63, "region": "americas", "core": true},
   {"code": "MXX", "market": "100", "name": "墨西哥BOLSA", "short": "墨西哥", "city": "墨西哥城", "country": "墨西哥", "lat": 19.43, "lon": -99.13, "region": "americas", "core": false},
-  {"code": "FISAULMU", "market": "100", "name": "富时沙特阿拉伯指数", "short": "沙特TASI", "city": "利雅得", "country": "沙特阿拉伯", "lat": 24.71, "lon": 46.68, "region": "africa-me", "core": true}
+  {"code": "FISAULMU", "market": "100", "name": "富时沙特阿拉伯指数", "short": "沙特TASI", "city": "利雅得", "country": "沙特阿拉伯", "lat": 24.71, "lon": 46.68, "region": "africa-me", "core": false}
 ]
