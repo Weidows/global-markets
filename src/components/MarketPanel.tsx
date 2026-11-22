@@ -101,6 +101,31 @@ export function TipCard({ m, x, y }: { m: Market; x: number; y: number }) {
             : '—'}
         </b>
       </div>
+      {m.history && m.history.length > 1 && (
+        <div className="wk">
+          {m.history.slice(-7).map((d) => {
+            const t = toneOf(d.p)
+            return (
+              <div className="wkr" key={d.d}>
+                <span>{d.d}</span>
+                <span className={t === 'up' ? 'u' : t === 'down' ? 'd' : 'f'}>{fmtPct(d.p)}</span>
+              </div>
+            )
+          })}
+          <div className="wkr total">
+            <span>区间累计</span>
+            <span
+              className={
+                m.history.slice(-7).reduce((a, d) => a * (1 + d.p / 100), 1) >= 1
+                  ? 'u'
+                  : 'd'
+              }
+            >
+              {fmtPct((m.history.slice(-7).reduce((a, d) => a * (1 + d.p / 100), 1) - 1) * 100)}
+            </span>
+          </div>
+        </div>
+      )}
       <div className="ft">报价时间 {fmtBeijing(m.quote?.quoteTime ?? null)}（北京时间）</div>
     </div>
   )

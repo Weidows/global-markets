@@ -25,6 +25,15 @@ export type Quote = {
   quoteTime: string | null
 }
 
+/** 一个交易日的日线点：d = MM-DD, c = 收盘, p = 当日涨跌幅% */
+export type Day = { d: string; c: number; p: number }
+
+export type History = {
+  generatedAt: string
+  days: number
+  series: Record<string, Day[]>
+}
+
 export type Snapshot = {
   generatedAt: string
   source: { name: string; url: string }
@@ -37,7 +46,7 @@ export type Snapshot = {
   quotes: Quote[]
 }
 
-export type Market = Place & { quote: Quote | null }
+export type Market = Place & { quote: Quote | null; history: Day[] | null }
 
 export type Tone = 'up' | 'down' | 'flat'
 
@@ -78,6 +87,18 @@ export async function loadSnapshot(): Promise<Snapshot> {
   const res = await fetch(url, { cache: 'no-store' })
   if (!res.ok) throw new Error(`snapshot ${res.status}`)
   return (await res.json()) as Snapshot
+}
+
+/** 一周日线是加分项：抓不到就让柱状图退化成当日单柱，不影响页面可用 */
+export async function loadHistory(): Promise<History | null> {
+  try {
+    const url = `${import.meta.env.BASE_URL}data/history.json?t=${Date.now()}`
+    const res = await fetch(url, { cache: 'no-store' })
+    if (!res.ok) return null
+    return (await res.json()) as History
+  } catch {
+    return null
+  }
 }
 
 /** 北京时间的相对/绝对显示 */

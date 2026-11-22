@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import WorldMap from './components/WorldMap'
+import MarketBars from './components/MarketBars'
 import MarketPanel, { TipCard } from './components/MarketPanel'
 import placesRaw from './data/places.json'
 import {
   fmtPct,
+  loadHistory,
   loadSnapshot,
   toneOf,
   weekdayZh,
+  type History,
   type Market,
   type Place,
   type Snapshot,
@@ -18,9 +20,9 @@ type HoverState = { code: string; x: number; y: number } | null
 
 export default function App() {
   const [snap, setSnap] = useState<Snapshot | null>(null)
+  const [hist, setHist] = useState<History | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
-  const [view, setView] = useState<'core' | 'all'>('core')
   const [hover, setHover] = useState<HoverState>(null)
   const [pinned, setPinned] = useState<HoverState>(null)
   const [showList, setShowList] = useState(false)
@@ -29,8 +31,9 @@ export default function App() {
   const reload = useCallback(async () => {
     setLoading(true)
     try {
-      const s = await loadSnapshot()
+      const [s, h] = await Promise.all([loadSnapshot(), loadHistory()])
       setSnap(s)
+      setHist(h)
       setError(null)
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e))
@@ -45,10 +48,14 @@ export default function App() {
 
   const markets: Market[] = useMemo(() => {
     const q = new Map((snap?.quotes ?? []).map((x) => [x.code, x]))
-    return PLACES.map((p) => ({ ...p, quote: q.get(p.code) ?? null }))
-  }, [snap])
+    return PLACES.map((p) => ({ ...p, quote: q.get(p.code) ?? null, history: hist?.series[p.code] ?? null }))
+  }, [snap, hist])
 
-  const shown = useMemo(() => (view === 'core' ? markets.filter((m) => m.core) : markets), [markets, view])
+  const core = useMemo(() => markets.filter((m) => m.core), [markets])
+  const weekRange = useMemo(() => {
+    const s = hist ? Object.values(hist.series).find((a) => a.length >= 5) : null
+    return s && s.length ? `${s[0].d} – ${s[s.length - 1].d}` : null
+  }, [hist])
 
   const selected = pinned?.code ?? null
   const tipCode = hover?.code ?? pinned?.code ?? null
@@ -81,22 +88,15 @@ export default function App() {
     <div className="shell">
       <header className="topbar">
         <div className="brand">
-          <h1>全球市场地图</h1>
+          <h1>全球市场 · 一周涨跌</h1>
           <span className="sub">
             {gen.slice(0, 10)} 周{weekdayZh(gen)} · {gen.slice(11, 16)} 更新
+            {weekRange ? ` · 周线 ${weekRange}` : ''}
           </span>
         </div>
         <div className="spacer" />
-        <div className="seg" role="group" aria-label="显示范围">
-          <button aria-pressed={view === 'core'} onClick={() => setView('core')}>
-            主要市场 {markets.filter((m) => m.core).length}
-          </button>
-          <button aria-pressed={view === 'all'} onClick={() => setView('all')}>
-            全部 {markets.length}
-          </button>
-        </div>
         <button className="iconbtn" data-on={showList} onClick={() => setShowList((v) => !v)} aria-pressed={showList}>
-          市场列表
+          全部市场 {markets.length}
         </button>
         <button className="iconbtn" onClick={() => void reload()} disabled={loading}>
           {loading ? '更新中…' : '刷新'}
@@ -106,36 +106,27 @@ export default function App() {
       <main className="stage" onClick={() => setPinned(null)}>
         <div className="mapwrap">
           <div className="mapbox">
-            <WorldMap
-              markets={shown}
-              hovered={tipCode}
-              selected={selected}
-              compact={view === 'all'}
-              onHover={onHover}
-              onSelect={onSelect}
-            />
+            <MarketBars markets={core} hovered={tipCode} selected={selected} onHover={onHover} onSelect={onSelect} />
           </div>
         </div>
 
         <div className="legend">
-          <div className="scale">
-            {[1, 3, 6].map((v) => (
-              <span
-                key={v}
-                className="dot"
-                style={{ width: 16 + v * 7, height: 16 + v * 7, marginRight: 6 }}
-                aria-hidden
-              />
-            ))}
-            <span style={{ marginLeft: 4 }}>1% · 3% · 6%</span>
+          <div className="lgrow">
+            <span className="lgbars">
+              <i style={{ height: 5, background: 'var(--down)' }} />
+              <i style={{ height: 13, background: 'var(--down)' }} />
+              <i style={{ height: 9, background: 'var(--down)' }} />
+              <i style={{ height: 4, background: 'var(--up)' }} />
+            </span>
+            <span>每块 7 根柱 = 最近 7 个交易日，柱高 = 当日涨跌幅</span>
           </div>
-          <div>气泡越大，当日波动越大 · 绿跌红涨</div>
+          <div className="lgrow dim">绿跌红涨 · 柱高按全图统一刻度，可直接横向比较</div>
         </div>
 
         <div className="hint">
-          悬停气泡看详情，点击固定
+          悬停看一周明细，点击固定
           <br />
-          每 {snap ? '小时' : '—'} 自动更新
+          行情每小时更新，日线每天一次
         </div>
 
         {loading && !snap && (
@@ -155,7 +146,7 @@ export default function App() {
               <code>{error}</code>
               <br />
               <br />
-              先运行 <code>node scripts/fetch-data.mjs</code> 生成快照
+              先运行 <code>node scripts/fetch-data.mjs</code> 生成数据
             </div>
           </div>
         )}
@@ -163,12 +154,7 @@ export default function App() {
         {!showList && tipMarket && tipPos && <TipCard m={tipMarket} x={tipPos.x} y={tipPos.y} />}
 
         {showList && (
-          <MarketPanel
-            markets={markets}
-            selected={selected}
-            onSelect={onSelect}
-            onClose={() => setShowList(false)}
-          />
+          <MarketPanel markets={markets} selected={selected} onSelect={onSelect} onClose={() => setShowList(false)} />
         )}
       </main>
 
@@ -204,7 +190,11 @@ export default function App() {
             const tone = toneOf(pct)
             const alpha = Math.min(1, 0.35 + Math.abs(pct) / 6)
             const color =
-              tone === 'up' ? `rgba(255,95,95,${alpha})` : tone === 'down' ? `rgba(53,208,138,${alpha})` : `rgba(147,163,171,${alpha})`
+              tone === 'up'
+                ? `rgba(255,95,95,${alpha})`
+                : tone === 'down'
+                  ? `rgba(53,208,138,${alpha})`
+                  : `rgba(147,163,171,${alpha})`
             return (
               <i
                 key={m.code}
