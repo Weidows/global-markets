@@ -13,12 +13,14 @@ const root = path.resolve(here, '..')
 const W = 1000
 const H = 520
 const ZOOM = 1.07
+// 中国版世界地图：中央经线 150°E，太平洋居中，中国偏左、美洲在右、欧洲在左
+const ROTATE_LON = 150
 
 const topo = JSON.parse(fs.readFileSync(path.join(root, 'node_modules/world-atlas/countries-110m.json'), 'utf8'))
 const land = feature(topo, topo.objects.land)
 const borders = mesh(topo, topo.objects.countries, (a, b) => a !== b)
 
-const projection = geoNaturalEarth1().fitSize([W * ZOOM, H * ZOOM], { type: 'Sphere' })
+const projection = geoNaturalEarth1().rotate([-ROTATE_LON, 0]).fitSize([W * ZOOM, H * ZOOM], { type: 'Sphere' })
 const vbX = Math.round(((W * ZOOM - W) / 2) * 100) / 100
 const vbY = Math.round(((H * ZOOM - H) / 2) * 100) / 100
 const pathGen = geoPath(projection).digits(2)
@@ -36,7 +38,8 @@ for (const p of places) {
 }
 
 const banner = `// 由 scripts/gen-map.mjs 自动生成，请勿手改。
-// 投影: d3 geoNaturalEarth1, viewBox ${W}x${H}, 数据源 world-atlas countries-110m (Natural Earth)
+// 投影: d3 geoNaturalEarth1 旋转中央经线到 ${ROTATE_LON}°E（中国版世界地图）,
+// viewBox ${W}x${H}, 数据源 world-atlas countries-110m (Natural Earth)
 `
 const out = `${banner}export const MAP_WIDTH = ${W}
 export const MAP_HEIGHT = ${H}
