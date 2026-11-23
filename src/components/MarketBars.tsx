@@ -78,10 +78,6 @@ export default function MarketBars({ markets, hovered, selected, onHover, onSele
           const series = days.length ? days : fallback
           if (!series.length) return null
           const last = series[series.length - 1]
-          const first = series[0]
-          // 一周累计：按各日涨跌幅复合
-          const cum = series.reduce((acc, d) => acc * (1 + d.p / 100), 1)
-          const week = series.length > 1 ? (cum - 1) * 100 : null
           const totalW = series.length * BAR_W + (series.length - 1) * BAR_GAP
           const startX = -totalW / 2
           const handleMove = (e: React.MouseEvent) => onHover(b.code, { x: e.clientX, y: e.clientY })
@@ -125,7 +121,6 @@ export default function MarketBars({ markets, hovered, selected, onHover, onSele
               <text className={`bar-pct ${toneClass(last.p)}`} y={21} textAnchor="middle">
                 {fmtPct(last.p)}
               </text>
-              <title>{`${m.name} ${first?.d}–${last?.d} 区间 ${fmtPct(week)}`}</title>
             </g>
           )
         })}

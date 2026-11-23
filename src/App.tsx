@@ -199,7 +199,6 @@ export default function App() {
               <i
                 key={m.code}
                 style={{ background: color }}
-                title={`${m.name} ${fmtPct(pct)}`}
                 onMouseEnter={() => setHover({ code: m.code, x: window.innerWidth / 2, y: 160 })}
                 onMouseLeave={() => setHover(null)}
                 onClick={() => setPinned({ code: m.code, x: window.innerWidth / 2, y: 300 })}
